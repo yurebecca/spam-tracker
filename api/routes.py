@@ -13,3 +13,6 @@ def index():
     responseData = healthResponse
     response = jsonify(responseData)
     return make_response(response, 200)
+
+
+from api import tracker

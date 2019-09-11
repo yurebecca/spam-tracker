@@ -1,0 +1,16 @@
+{
+    "severity": {
+        "min": 0,
+        "max": 10
+    },
+    "profanity_filter": {
+        "analyses": ["deep"],
+        "languages": ["en"],
+        "safe_profanity_percent": 5,
+        "severity_start_on_profanity_detection": 3,
+        "severity_increment_per_percent": 2,
+        "extra_profane_word_dictionary": {
+            "en": []
+        }
+    }
+}

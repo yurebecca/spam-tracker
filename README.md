@@ -18,8 +18,16 @@ Required to have the following installed
 python3
 pip3
 brew
+hunspell (brew install hunspell)
+zeromq  (brew install zeromq)
+pkgconfig (brew install pkgconfig)
 ```
 
+`hunspell` may cause a bit of issues on a Mac, which can be solved if following these:
+
+https://github.com/blatinier/pyhunspell/issues/26
+
+https://github.com/blatinier/pyhunspell/issues/33
 
 ## Good to know
 1. Install python dependencies with `sh script/install.sh`.
