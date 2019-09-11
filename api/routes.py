@@ -1,7 +1,15 @@
-import os
+from flask import jsonify, make_response
 from api import app
 
-@app.route('/')
-@app.route('/index')
+healthResponse = {
+    "meta": {
+        "message": 'Hello, World! Tracker is online!'
+    }
+}
+
+@app.route('/', methods=['GET'])
+@app.route('/index', methods=['GET'])
 def index():
-    return "Hello, World!"
+    responseData = healthResponse
+    response = jsonify(responseData)
+    return make_response(response, 200)
