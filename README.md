@@ -36,3 +36,10 @@ https://github.com/blatinier/pyhunspell/issues/33
 
 3. Run the flask application with `sh script/start.sh`.
 
+
+## Challenges
+1. Short content has a high chance to skew the severity to higher numbers for the other checks.
+    * Possible solutions:
+        * [-] Check the content's length first and skip other checks if it doesn't pass minimum requirements
+        * [x] Do all the checks but use the rating for short content as the final rating instead of the highest rating
+2. Keyword stuffing will be hard to spot (because we can't just count each word's occurance ...)

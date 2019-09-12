@@ -1,6 +1,10 @@
 Flask
 python-dotenv
 pytest
+nltk
+numpy
+pandas
+scikit-learn
 profanity-filter
 
 hunspell==0.5.5
