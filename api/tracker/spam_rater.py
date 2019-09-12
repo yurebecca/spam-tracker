@@ -1,6 +1,7 @@
-from config import config
-import lib
+from . import config
+from . import lib
 
+config = config.config
 sr_config = config['spam_rater']
 
 def spam_severity_rating(confidence_of_spam):

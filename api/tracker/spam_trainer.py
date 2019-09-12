@@ -1,6 +1,7 @@
 # Medium https://towardsdatascience.com/spam-or-ham-introduction-to-natural-language-processing-part-2-a0093185aebd
 # Code taken from https://github.com/happilyeverafter95/Medium/blob/master/spam_or_ham.py
 import os
+import pickle
 import pandas as pd
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
@@ -54,7 +55,7 @@ vectorizer = TfidfVectorizer()
 X_train = vectorizer.fit_transform(X_train)
 
 # training the classifier 
-svm = svm.SVC(C=1000, gamma='scale')
+svm = svm.SVC(C=1000, gamma='scale', probability=True)
 svm.fit(X_train, y_train)
 
 # testing against testing set 
@@ -62,3 +63,10 @@ X_test = vectorizer.transform(X_test)
 y_pred = svm.predict(X_test)
 print("Trained Spam Classifier results:")
 print(confusion_matrix(y_test, y_pred))
+
+# Save trained algorithm to a file
+trained_data_folder = os.path.join(os.path.dirname(__file__), '..', '..', 'algorithms')
+with open(os.path.join(trained_data_folder, 'spam_model.pkl'), 'wb') as f:
+    pickle.dump(svm, f)
+with open(os.path.join(trained_data_folder, 'spam_model_vectorizer.pkl'), 'wb') as f:
+    pickle.dump(vectorizer, f)

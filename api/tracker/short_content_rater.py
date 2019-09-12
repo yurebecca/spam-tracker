@@ -1,6 +1,7 @@
-from config import config
-import lib
+from . import config
+from . import lib
 
+config = config.config
 sc_config = config['short_content']
 
 def short_content_severity_rating(wordcount):

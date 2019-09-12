@@ -1,9 +1,10 @@
 import re
 from profanity_filter import ProfanityFilter
-from config import config
-import lib
+from . import config
+from . import lib
 
 
+config = config.config
 pr_config = config['profanity_rater']
 
 pf = ProfanityFilter(analyses=pr_config['languages'], languages=pr_config['languages'])

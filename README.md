@@ -36,6 +36,12 @@ https://github.com/blatinier/pyhunspell/issues/33
 
 3. Run the flask application with `sh script/start.sh`.
 
+## To do:
+* [-] Keyword stuffing check
+* [-] Tests for the checks
+* [-] Add logging
+* [-] Identified issue: email spam as training data marks has a high chance to score everything as spam...
+    * Will need new data to train the spam checker
 
 ## Challenges
 1. Short content has a high chance to skew the severity to higher numbers for the other checks.
@@ -43,3 +49,9 @@ https://github.com/blatinier/pyhunspell/issues/33
         * [-] Check the content's length first and skip other checks if it doesn't pass minimum requirements
         * [x] Do all the checks but use the rating for short content as the final rating instead of the highest rating
 2. Keyword stuffing will be hard to spot (because we can't just count each word's occurance ...)
+    * Possible solutions:
+        * [x] Have a list of keywords to look out for, and just spot these 
+3. There is no way to get an idea of how many projects there are from the API, or which ids don't exist ...
+    * Possible solutions:
+        * [x] Use a while toop to check for 404 HTTP status, when encountered we stop
+            * We can let the user decide the range of project ids (will be implemented later)
