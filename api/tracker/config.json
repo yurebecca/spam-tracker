@@ -1,0 +1,26 @@
+{
+    "severity": {
+        "min": 0,
+        "max": 10
+    },
+    "short_content": {
+        "min_wordcount": 100,
+        "severity_start": 3,
+        "severity_increment_per_wordcount": 5
+    },
+    "spam_rater": {
+        "safe_spam_confidence_percent": 60,
+        "severity_start": 7,
+        "severity_increment_per_percent": 10
+    },
+    "profanity_rater": {
+        "analyses": ["deep"],
+        "languages": ["en"],
+        "safe_profanity_percent": 5,
+        "severity_start": 3,
+        "severity_increment_per_percent": 2,
+        "extra_profane_word_dictionary": {
+            "en": []
+        }
+    }
+}
