@@ -4,7 +4,6 @@ import json
 import time
 import copy
 import requests
-import logging
 from flask import jsonify, make_response
 from api import app
 from api.tracker import SpamTracker as ST
@@ -46,7 +45,6 @@ def tracker_bulk():
     while can_continue:
         response = requests.get(url + f"{project_id}", headers = headers)
 
-        logging.debug("hewwwoooo")
         if response.status_code == 200:
             response_json = response.json()
 
@@ -71,13 +69,16 @@ def tracker_bulk():
             st.set_content(content)
             st.predict()
 
-            responseData.append(
-                {
-                    "project_id": project_id,
-                    "severity_rating": st.final_rating(),
-                    "severity_type": st.severity_type
-                }
-            )
+            project_final_rating = {
+                "project_id": project_id,
+                "severity_rating": st.final_rating(),
+                "severity_type": st.severity_type
+            }
+            responseData.append(project_final_rating)
+
+            project_ratings = copy.copy(project_final_rating)
+            project_ratings['ratings'] = st.get_ratings()
+            app.logger.info('Project Rating: %s', project_ratings)
 
             project_id += 1
             time.sleep(API_TIMEOUT)

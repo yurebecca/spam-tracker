@@ -4,16 +4,19 @@
         "max": 10
     },
     "short_content": {
+        "turn_on": true,
         "min_wordcount": 100,
         "severity_start": 3,
         "severity_increment_per_wordcount": 5
     },
     "spam_rater": {
+        "turn_on": true,
         "safe_spam_confidence_percent": 60,
         "severity_start": 7,
         "severity_increment_per_percent": 10
     },
     "profanity_rater": {
+        "turn_on": true,
         "analyses": ["deep"],
         "languages": ["en"],
         "safe_profanity_percent": 5,
