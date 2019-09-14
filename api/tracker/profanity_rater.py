@@ -12,13 +12,19 @@ pf.censor_char = '*'
 pf.extra_profane_word_dictionaries = pr_config['extra_profane_word_dictionary']
 
 
-def profanity_severity_rating(content_text):
+def profanity_severity_rating(content_text, turn_on = None):
+    severity = 0
+    if turn_on is None:
+        turn_on = pr_config['turn_on']
+
+    if turn_on == False:
+        return severity
+
     cencored_text = pf.censor(content_text)
     profane_words = re.findall(f"\{pf.censor_char}+", cencored_text)
     total_words = lib.word_count(content_text)
     percent_profane = (len(profane_words) / total_words) * 100
 
-    severity = 0
     if percent_profane > pr_config['safe_profanity_percent']:
         severity = pr_config['severity_start']
         # Increase severity as the percentage goes up by the rate set in the config.

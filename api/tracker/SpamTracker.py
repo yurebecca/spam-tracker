@@ -3,7 +3,6 @@ import pickle
 import operator
 from . import config
 from . import lib
-# from .spam_trainer import svm, vectorizer
 from .profanity_rater import profanity_severity_rating
 from .spam_rater import spam_severity_rating
 from .short_content_rater import short_content_severity_rating
@@ -29,7 +28,7 @@ class SpamTracker:
 
     spam_prediction = 0 # Default to ham (0 - ham; 1 - spam;)
     spam_prediction_confidence = 0
-    severity_type = ""
+    severity_type = None
 
     def __init__(self):
         pass
@@ -47,7 +46,7 @@ class SpamTracker:
         keyword_stuffing_rating = 0
         spam_prediction = 0
         spam_prediction_confidence = 0
-        severity_type = ""
+        severity_type = None
     
     def predict(self):
         self.predict_spam()
@@ -56,18 +55,18 @@ class SpamTracker:
 
     def final_rating(self):
         ratings = {
-            "profanity_rating": self.profanity_rating,
-            "spam_rating": self.spam_rating,
-            "short_rating": self.short_rating,
-            "keyword_stuffing_rating": self.keyword_stuffing_rating
+            "profanity": self.profanity_rating,
+            "spam": self.spam_rating,
+            "short_content": self.short_rating,
+            "keyword_stuffing": self.keyword_stuffing_rating
         }
         self.severity_type = max(ratings.items(), key=operator.itemgetter(1))[0]
         highest_rating = ratings[self.severity_type]
         if self.short_rating > 5:
-            self.severity_type = "short_rating"
-            highest_rating = self.short_rating
+            self.severity_type = "short_content"
+            highest_rating = ratings[self.severity_type]
         if highest_rating == 0:
-            self.severity_type = ""
+            self.severity_type = None
         return highest_rating
     
     def predict_spam(self):
@@ -75,5 +74,18 @@ class SpamTracker:
         prediction = svm.predict(msg)
         self.spam_prediction = prediction[0]
         self.spam_prediction_confidence = svm.predict_proba(msg)[0]
-        self.spam_rating = spam_severity_rating(self.spam_prediction_confidence[1])
+        self.spam_rating = spam_severity_rating(self.spam_prediction, self.spam_prediction_confidence[1])
         return self.spam_prediction
+    
+    def get_ratings(self):
+        return {
+            "profanity_rating": self.profanity_rating,
+            "spam_rating": self.spam_rating,
+            "short_rating": self.short_rating,
+            "keyword_stuffing_rating": self.keyword_stuffing_rating,
+
+            "spam": {
+                "spam_prediction": int(self.spam_prediction),
+                "spam_prediction_confidence": [float(self.spam_prediction_confidence[0]), float(self.spam_prediction_confidence[1])],
+            }
+        }

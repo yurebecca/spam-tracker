@@ -4,8 +4,15 @@ from . import lib
 config = config.config
 sr_config = config['spam_rater']
 
-def spam_severity_rating(confidence_of_spam):
+def spam_severity_rating(is_spam, confidence_of_spam, turn_on = None):
     severity = 0
+    if turn_on is None:
+        turn_on = sc_config['turn_on']
+
+    if turn_on == False or is_spam == False:
+        # Not the best way to do this, because the spam checker code still runs...
+        return severity
+
     confidence_percent = lib.round_half_up(confidence_of_spam * 100)
     if confidence_percent >= sr_config['safe_spam_confidence_percent']:
         severity = sr_config['severity_start']
@@ -18,5 +25,8 @@ def spam_severity_rating(confidence_of_spam):
             severity = config['severity']['max']
         else:
             severity += severity_increase
+    elif is_spam:
+        severity = sr_config['severity_start']
+        
 
     return severity
