@@ -6,6 +6,7 @@ from . import lib
 from .profanity_rater import profanity_severity_rating
 from .spam_rater import spam_severity_rating
 from .short_content_rater import short_content_severity_rating
+from .keyword_stuffing_rater import keyword_stuffing_severity_rating, find_stuffed_keywords
 
 # Import the trained svm and vectorizer
 trained_data_folder = os.path.join(os.path.dirname(__file__), '..', '..', 'algorithms')
@@ -30,6 +31,8 @@ class SpamTracker:
     spam_prediction_confidence = 0
     severity_type = None
 
+    keywords = []
+
     def __init__(self):
         pass
 
@@ -47,11 +50,20 @@ class SpamTracker:
         spam_prediction = 0
         spam_prediction_confidence = 0
         severity_type = None
+        keywords = []
     
     def predict(self):
         self.predict_spam()
         self.short_rating = short_content_severity_rating(self.word_count)
         self.profanity_rating = profanity_severity_rating(self.content)
+
+        self.keywords = find_stuffed_keywords(self.content)
+        stuffed_keyword = None
+        for k in self.keywords:
+            if stuffed_keyword is None:
+                stuffed_keyword = k
+            self.keywords[k] = float(self.keywords[k])
+        self.keyword_stuffing_rating = keyword_stuffing_severity_rating(self.content, stuffed_keyword)
 
     def final_rating(self):
         ratings = {
@@ -87,5 +99,6 @@ class SpamTracker:
             "spam": {
                 "spam_prediction": int(self.spam_prediction),
                 "spam_prediction_confidence": [float(self.spam_prediction_confidence[0]), float(self.spam_prediction_confidence[1])],
-            }
+            },
+            "keywords": self.keywords
         }

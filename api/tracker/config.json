@@ -3,6 +3,12 @@
         "min": 0,
         "max": 10
     },
+    "keyword_stuffing": {
+        "turn_on": true,
+        "safe_keyword_stuffing_percent": 3,
+        "severity_start": 2,
+        "severity_increment_per_percent": 2
+    },
     "short_content": {
         "turn_on": true,
         "min_wordcount": 100,

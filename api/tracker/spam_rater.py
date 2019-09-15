@@ -7,7 +7,7 @@ sr_config = config['spam_rater']
 def spam_severity_rating(is_spam, confidence_of_spam, turn_on = None):
     severity = 0
     if turn_on is None:
-        turn_on = sc_config['turn_on']
+        turn_on = sr_config['turn_on']
 
     if turn_on == False or is_spam == False:
         # Not the best way to do this, because the spam checker code still runs...

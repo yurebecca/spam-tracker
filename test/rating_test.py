@@ -5,11 +5,13 @@ from api.tracker.config import config
 from api.tracker.short_content_rater import short_content_severity_rating
 from api.tracker.profanity_rater import profanity_severity_rating
 from api.tracker.spam_rater import spam_severity_rating
+from api.tracker.keyword_stuffing_rater import keyword_stuffing_severity_rating
 
 
 # 100 word `lorem ipsum` text
 lorem_text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nec libero lacus. Donec volutpat odio in risus consectetur, at posuere sapien egestas. Integer interdum libero ac arcu vestibulum tempor. Nunc molestie risus sed arcu tincidunt auctor. Nullam venenatis, nibh vel rhoncus rutrum, erat enim pellentesque quam, eget venenatis massa lorem vitae arcu. Quisque tempus tempor magna, a faucibus ligula commodo eu. Donec fermentum dui et ex ornare auctor. Morbi pellentesque erat nulla, quis cursus tellus gravida ac. Cras eu volutpat enim. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus mollis laoreet tempus. Pellentesque quis."
 profane_word = "shit"
+keyword = "programming"
 
 # Check settings
 def test_content_length_config_settings():
@@ -18,6 +20,8 @@ def test_profanity_config_settings():
     assert config['profanity_rater']['severity_start'] <= config['severity']['max']
 def test_spam_config_settings():
     assert config['spam_rater']['severity_start'] <= config['severity']['max']
+def test_keyword_stuffing_settings():
+    assert config['keyword_stuffing']['severity_start'] <= config['severity']['max']
 
 
 # Tests for short_content_rater
@@ -137,3 +141,70 @@ def test_spam_off_for_slight_spam():
 def test_spam_off_for_super_spam():
     too_spam_percent = config['spam_rater']['safe_spam_confidence_percent'] + config['spam_rater']['severity_increment_per_percent']
     assert spam_severity_rating(1, too_spam_percent / 100, False) == 0
+
+
+# Tests for keyword_stuffing_rater
+def test_keyword_stuffing_none():
+    assert keyword_stuffing_severity_rating(lorem_text, keyword, True) == 0
+
+def test_keyword_stuffing_some():
+    text = " ".join([lorem_text, keyword])
+    word_count = lib.word_count(text)
+    keyword_percent = (1 * 100) / word_count
+    safe_keyword_percent = config['keyword_stuffing']['safe_keyword_stuffing_percent']
+    if keyword_percent > safe_keyword_percent:
+        pytest.skip(f"Tested with another test case.")
+    elif keyword_percent < safe_keyword_percent:
+        assert keyword_stuffing_severity_rating(text, keyword, True) == 0
+    else:
+        assert keyword_stuffing_severity_rating(text, keyword, True) == config['keyword_stuffing']['safe_keyword_stuffing_percent']
+
+def test_keyword_stuffing_many():
+    keyword_wordcount = 1
+    text = " ".join([lorem_text, keyword])
+    word_count = lib.word_count(text)
+    keyword_percent = (keyword_wordcount * 100) / word_count
+    too_stuffed_percent = config['keyword_stuffing']['safe_keyword_stuffing_percent'] + config['keyword_stuffing']['severity_increment_per_percent']
+    if keyword_percent > too_stuffed_percent:
+        if config['keyword_stuffing']['severity_start'] < config['severity']['max']:
+            assert keyword_stuffing_severity_rating(text, keyword, True) >= config['keyword_stuffing']['severity_start']
+        else:
+            assert keyword_stuffing_severity_rating(text, keyword, True) == config['severity']['max']
+
+    while keyword_percent < too_stuffed_percent:
+        keyword_wordcount += 1
+        text = " ".join([text, keyword])
+        word_count = lib.word_count(text)
+        keyword_percent = (keyword_wordcount * 100) / word_count
+
+    if config['keyword_stuffing']['severity_start'] < config['severity']['max']:
+        assert keyword_stuffing_severity_rating(text, keyword, True) >= config['keyword_stuffing']['severity_start']
+    else:
+        assert keyword_stuffing_severity_rating(text, keyword, True) == config['severity']['max']
+
+def test_keyword_stuffing_off_none():
+    assert keyword_stuffing_severity_rating(lorem_text, keyword, False) == 0
+
+def test_keyword_stuffing_off_some():
+    text = " ".join([lorem_text, keyword])
+    word_count = lib.word_count(text)
+    keyword_percent = (1 * 100) / word_count
+    safe_keyword_percent = config['keyword_stuffing']['safe_keyword_stuffing_percent']
+    assert keyword_stuffing_severity_rating(text, keyword, True) == 0
+
+def test_keyword_stuffing_off_many():
+    keyword_wordcount = 1
+    text = " ".join([lorem_text, keyword])
+    word_count = lib.word_count(text)
+    keyword_percent = (keyword_wordcount * 100) / word_count
+    too_stuffed_percent = config['keyword_stuffing']['safe_keyword_stuffing_percent'] + config['keyword_stuffing']['severity_increment_per_percent']
+    if keyword_percent > too_stuffed_percent:
+        assert keyword_stuffing_severity_rating(text, keyword, True) == 0
+
+    while keyword_percent < too_stuffed_percent:
+        keyword_wordcount += 1
+        text = " ".join([text, keyword])
+        word_count = lib.word_count(text)
+        keyword_percent = (keyword_wordcount * 100) / word_count
+
+    assert keyword_stuffing_severity_rating(text, keyword, False) == 0
